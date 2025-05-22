@@ -1,13 +1,19 @@
-package BST;
+package BinaryTree;
 
 import java.util.Stack;
 import java.util.Vector;
 
 class BST {
-    private static class Node {
+    protected static class Node {
         int value;
         Node left;
         Node right;
+
+        Node() {
+           value = -1;
+           this.left = null;
+           this.right = null;
+        }
 
         Node(int value) {
             this.value = value;
@@ -37,6 +43,18 @@ class BST {
             sb.append(")");
 
             System.out.println(sb);
+        }
+
+        int getValue() { return this.value; }
+
+        Node getLeft() {
+            if (this.left == null) return null;
+            return this.left;
+        }
+
+        Node getRight() {
+            if (this.right == null) return null;
+            return this.right;
         }
     }
     Node root;
@@ -259,7 +277,7 @@ class BST {
     }
 
     // Preorder Traversal!
-    private void _getPreorderTraversal(Node head, Vector<Integer> res) {
+    void _getPreorderTraversal(Node head, Vector<Integer> res) {
         if (head == null) return;
         res.addElement(head.value);
         _getPreorderTraversal(head.left, res);
@@ -299,5 +317,243 @@ class BST {
         parent.print();
         return this;
     }
+
+    Integer max() {
+        if (root == null) return null;
+        Node head = root;
+        while (head.right != null) head = head.right;
+        return head.value;
+    }
+
+    Integer min() {
+        if (root == null) return null;
+        Node head = root;
+        while (head.left != null) head = head.left;
+        return head.value;
+    }
+}
+
+class AVLTree {
+
+    protected static class AVLNode {
+        // int value;
+        int value;
+        int height = 0;
+        AVLNode left = null;
+        AVLNode right = null;
+
+        AVLNode(int value){
+            this.value = value;
+        }
+
+        AVLNode(int value, AVLNode left, AVLNode right) {
+            this.value = value;
+            this.left = left;
+            this.right = right;
+        }
+
+        void print() {
+            StringBuilder sb = new StringBuilder("AVLNode(");
+            sb.append("value: ").append(value).append(", ");
+            sb.append("height: ").append(height).append(", ");
+
+            sb.append("left: ");
+            if (left != null) sb.append(left.value);
+            else sb.append((Object) null);
+            sb.append(", ");
+
+            sb.append("right: ");
+            if (right != null) sb.append(right.value);
+            else sb.append((Object) null);
+            sb.append(")");
+
+            System.out.println(sb);
+        }
+    }
+
+    AVLNode root = null;
+
+    AVLTree(int value) {
+        root = new AVLNode(value);
+    }
+
+    AVLTree(int[] arr) {
+        for (int i: arr) this.insert(i);
+    }
+
+    // callable api function!
+    public AVLTree insert(int value) {
+        return this.insert_and_rotate(value);
+    }
+
+    private AVLTree insert_and_rotate(int value) {
+        if (root == null) {
+            root = new AVLNode(value);
+            return this;
+        }
+        if (root.value == value) return this;
+        AVLNode head = root;
+
+        AVLTree ret;
+        if (value < head.value) ret = _insert_and_rotate(value, head.left, head);
+        else ret = _insert_and_rotate(value, head.right, head);
+        if (ret == null) return this;
+
+        int leftHeight = -1, rightHeight = -1;
+        if (head.left != null) leftHeight = head.left.height;
+        if (head.right != null) rightHeight = head.right.height;
+        head.height = Math.max(leftHeight, rightHeight) + 1;
+        int heightDifference = Math.abs(leftHeight - rightHeight);
+
+        if (heightDifference > 1) {
+            if (leftHeight > rightHeight) root = rotateRight(head);
+            else if (rightHeight > leftHeight) root = rotateLeft(head);
+        }
+
+        return this;
+    }
+
+    private AVLTree _insert_and_rotate(int value, AVLNode head, AVLNode parent) {
+        // Insertion
+        if (head != null) {
+            if (head.value == value) return null;
+            AVLTree ret;
+            if (value < head.value) ret = _insert_and_rotate(value, head.left, head);
+            else ret = _insert_and_rotate(value, head.right, head);
+            // we cannot do anything if the node already exists in the tree.
+            // we must make sure nothing is updated
+            if (ret == null) return this;
+        }
+        else {
+            head = new AVLNode(value);
+            if (value < parent.value) parent.left = head;
+            else parent.right = head;
+            // we are at a leaf node. do not rotate at the leaf!
+            return this;
+        }
+
+        //update the heights as we traverse back up the tree and then rotate if needed
+        int leftHeight = -1, rightHeight = -1;
+        if (head.left != null) leftHeight = head.left.height;
+        if (head.right != null) rightHeight = head.right.height;
+        head.height = Math.max(leftHeight, rightHeight) + 1;
+        int heightDifference = Math.abs(leftHeight - rightHeight);
+
+        // figure out how we should rotate the tree.
+        if (heightDifference > 1) {
+            AVLNode newChild;
+            if (leftHeight > rightHeight) newChild = rotateRight(head);
+            else newChild = rotateLeft(head);
+
+            if (parent.left == head) parent.left = newChild;
+            else parent.right = newChild;
+        }
+
+        return this;
+    }
+
+    // rotates the AVLTree (subtree) with the AVLNode pivot
+    private AVLNode rotateRight(AVLNode pivot) {
+        assert(pivot.left != null);
+        AVLNode subPivot = pivot.left;
+        // left subtree must be checked before we rotate right!
+        int leftRightSubtreeHeight = -1;
+        int leftLeftSubtreeHeight = -1;
+
+        //rotate subPivot to the left if necessary
+        if (subPivot.right != null) leftRightSubtreeHeight = subPivot.right.height;
+        if (subPivot.left != null) leftLeftSubtreeHeight = subPivot.left.height;
+
+        if (leftRightSubtreeHeight > leftLeftSubtreeHeight) {
+            AVLNode newSubPivot = subPivot.right;
+            subPivot.right = newSubPivot.left;
+            newSubPivot.left = subPivot;
+            subPivot.height -= 1;
+            newSubPivot.height += 1;
+            subPivot = newSubPivot;
+        }
+        // now rotate on the pivot. subPivot takes the place of the pivot.
+        pivot.height -= 2;
+        pivot.left = subPivot.right;
+        subPivot.right = pivot;
+        pivot = subPivot;
+
+        return pivot;
+    }
+
+    private AVLNode rotateLeft(AVLNode pivot) {
+        assert(pivot.right != null);
+        AVLNode subPivot = pivot.right;
+        // left subtree must be checked before we rotate right!
+        int rightRightSubtreeHeight = -1;
+        int rightLeftSubtreeHeight = -1;
+
+        if (subPivot.right != null) rightRightSubtreeHeight = subPivot.right.height;
+        if (subPivot.left != null) rightLeftSubtreeHeight = subPivot.left.height;
+
+        //rotate subPivot to the right if necessary
+        if (rightLeftSubtreeHeight > rightRightSubtreeHeight) {
+            AVLNode newSubPivot = subPivot.left;
+            subPivot.left = newSubPivot.right;
+            newSubPivot.right = subPivot;
+            subPivot.height -= 1;
+            newSubPivot.height += 1;
+            subPivot = newSubPivot;
+        }
+        // now rotate on the pivot. subPivot takes the place of the pivot.
+        pivot.height -= 2;
+        pivot.right = subPivot.left;
+        subPivot.left = pivot;
+        pivot = subPivot;
+
+        return pivot;
+    }
+
+    AVLTree delete(int value) {
+        return this;
+    }
+
+    void print() {
+        if (root == null) {
+            System.out.println("[]");
+            return;
+        }
+        Vector<Integer> res = new Vector<Integer>();
+        AVLNode head = root;
+        res.addElement(head.value);
+        _getPreorderTraversal(head.left, res);
+        _getPreorderTraversal(head.right, res);
+
+        StringBuilder sb = new StringBuilder("[");
+        for (Integer i : res)
+            sb.append(i).append(", ");
+
+        sb.setLength(sb.length() - 2);
+        sb.append("]");
+
+        System.out.println(sb);
+    }
+
+    void _getPreorderTraversal(AVLNode head, Vector<Integer> res) {
+        if (head == null) return;
+        res.addElement(head.value);
+        _getPreorderTraversal(head.left, res);
+        _getPreorderTraversal(head.right, res);
+    }
+
+    void printVerbose() {
+        if (root == null) return;
+        root.print();
+        _printVerbose(root.left);
+        _printVerbose(root.right);
+    }
+
+    void _printVerbose(AVLNode head) {
+        if (head == null) return;
+        head.print();
+        _printVerbose(head.left);
+        _printVerbose(head.right);
+    }
+
 
 }
