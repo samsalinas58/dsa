@@ -8,7 +8,11 @@ class Main {
         s.print();
         s.push(2).push(3).push(4);
         s.print();
-        s.pop().pop().pop().pop().pop();
+
+        System.out.println(s.top());
+        s.pop().pop().pop().pop();
         s.print();
+
+        s.pop(); // EmptyStackException!
     }
 }

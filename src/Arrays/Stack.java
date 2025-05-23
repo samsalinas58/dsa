@@ -17,11 +17,6 @@ class Stack {
         arr = new int[]{value};
     }
 
-    // TODO: Implement later when I can properly implement capacity
-    Stack (int[] arr) {
-
-    }
-
     Stack push(int value) {
         if (size == arr.length) {
             int capacity = size * 2;
@@ -43,19 +38,19 @@ class Stack {
     }
 
     // lazy deletion!
-    Stack pop() {
-        if (size == 0) return null;
+    Stack pop() throws EmptyStackException {
+        if (size == 0) throw new EmptyStackException();
         size -= 1;
         return this;
     }
 
     void print() {
-        if (this.size() == 0)  {
+        if (size == 0)  {
             System.out.println("[]");
             return;
         }
         StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < size; i++) sb.append(arr[i]).append(", ");
+        for (int i = size - 1; i >= 0; i--) sb.append(arr[i]).append(", ");
         sb.setLength(sb.length() - 2);
         sb.append("]");
         System.out.println(sb);
