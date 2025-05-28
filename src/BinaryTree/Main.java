@@ -32,22 +32,37 @@ public class Main {
    //      c.delete(22);
 
 
-        AVLTree a1 = new AVLTree(50);
-        a1.insert(30);
-        a1.insert(70);
-        a1.insert(40);
-        a1.insert(45);
-        a1.insert(20);
-        a1.insert(80);
-        a1.insert(60);
-        a1.insert(75);
-        a1.print();
-        a1.printVerbose();
 
         int[] arr = {50, 30, 70, 40, 45, 20, 80, 60, 75};
+        System.out.println("Creating new AVL tree inserting in order: " + arrToString(arr));
         AVLTree a2 = new AVLTree(arr);
-        a2.print();
-        a2.printVerbose();
 
+
+        while (!a2.isEmpty()) {
+            a2.print();
+            int root = a2.getRoot();
+            a2.delete(root);
+        } // works good!
+
+        System.out.println("Creating new AVL tree inserting in order: " + arrToString(arr));
+        AVLTree a3 = new AVLTree(arr);
+        a3.print();
+        a3.delete(60);
+        a3.print();
+        a3.delete(75);
+        a3.print();
+        a3.delete(30);
+        a3.print();
+    }
+
+    static String arrToString(int[] arr) {
+        if (arr.length == 0) return "[]";
+
+        StringBuilder sb = new StringBuilder("[");
+        for (int i: arr) sb.append(i).append(", ");
+
+        sb.setLength(sb.length() - 2);
+        sb.append("]");
+        return sb.toString();
     }
 }

@@ -386,6 +386,15 @@ class AVLTree {
         return this.insert_and_rotate(value);
     }
 
+    // Private function used during rotations to update the heights of the rotated nodes.
+    private void updateHeight(AVLNode node) {
+        if (node == null) return;
+        int leftHeight = -1, rightHeight = -1;
+        if (node.left != null) leftHeight = node.left.height;
+        if (node.right != null) rightHeight = node.right.height;
+        node.height = Math.max(leftHeight, rightHeight) + 1;
+    }
+
     private AVLTree insert_and_rotate(int value) {
         if (root == null) {
             root = new AVLNode(value);
@@ -468,15 +477,17 @@ class AVLTree {
             AVLNode newSubPivot = subPivot.right;
             subPivot.right = newSubPivot.left;
             newSubPivot.left = subPivot;
-            subPivot.height -= 1;
-            newSubPivot.height += 1;
+            updateHeight(subPivot); // recalculate the heights as we rotate!
+
             subPivot = newSubPivot;
+            updateHeight(subPivot);
         }
         // now rotate on the pivot. subPivot takes the place of the pivot.
-        pivot.height -= 2;
         pivot.left = subPivot.right;
+        updateHeight(pivot);
         subPivot.right = pivot;
         pivot = subPivot;
+        updateHeight(pivot);
 
         return pivot;
     }
@@ -509,8 +520,175 @@ class AVLTree {
         return pivot;
     }
 
+    AVLNode rotate(AVLNode pivot) {
+        assert(pivot != null);
+        int leftHeight = -1, rightHeight = -1;
+        if (pivot.left != null) leftHeight = pivot.left.height;
+        if (pivot.right != null) rightHeight = pivot.right.height;
+        int balance = Math.abs(leftHeight - rightHeight);
+
+        if (balance > 1) {
+            if (rightHeight > leftHeight) pivot = rotateLeft(pivot);
+            else if (leftHeight > rightHeight) pivot = rotateRight(pivot);
+        }
+        return pivot;
+    }
+
     AVLTree delete(int value) {
+        if (root == null) return this;
+        if (root.value == value && root.left == null && root.right == null) {
+            root = null;
+            return this;
+        }
+        AVLNode head = root;
+        return this.delete_and_rotate(value, head, head);
+    }
+
+    private int getBalance(AVLNode head) {
+        if (head == null) return -1;
+        int leftHeight = -1, rightHeight = -1;
+        if (head.left != null) leftHeight = head.left.height;
+        if (head.right != null) rightHeight = head.right.height;
+
+        return Math.abs(rightHeight - leftHeight);
+    }
+
+    boolean isEmpty() { return root == null; }
+
+    Integer getRoot() {
+        if (root == null) return null;
+        return root.value;
+    }
+
+    // Go to the node we are trying to delete.
+    // After we have arrived, grab it's closest inorder node's value.
+    // Go back to the node we grabbed, and delete it from the tree, giving the parent a new child and adjusting the
+    // height of the parent.
+    // travel back up the tree and rotate as necessary.
+    private AVLTree delete_and_rotate(int value, AVLNode head, AVLNode parent) {
+        if (head == null) return this;
+        if (value < head.value) delete_and_rotate(value, head.left, head);
+        else if (value > head.value) delete_and_rotate(value, head.right, head);
+
+        // we are at the node we want to replace.
+        else {
+            AVLNode closest = getClosestInorderNode(head);
+            if (closest == null) {
+                if (parent.left == head) parent.left = null;
+                else parent.right = null;
+                return this;
+            }
+            if (closest.value < value) removeClosestInorderNodeAndRotate(closest.value, head.left, head);
+            else removeClosestInorderNodeAndRotate(closest.value, head.right, head);
+            head.value = closest.value;
+            if (head == root) {
+                int leftHeight = -1, rightHeight = -1;
+                if (root.left != null) leftHeight = root.left.height;
+                if (root.right != null) rightHeight = root.right.height;
+                int balance = Math.abs(leftHeight - rightHeight);
+
+                if (balance > 1) {
+                    if (leftHeight > rightHeight) root = rotateRight(root);
+                    else root = rotateLeft(root);
+                }
+            }
+            return this;
+        }
+
+        updateHeight(head);
+        int leftHeight = -1, rightHeight = -1;
+        if (head.left != null) leftHeight = head.left.height;
+        if (head.right != null) rightHeight = head.right.height;
+        int balance = Math.abs(leftHeight - rightHeight);
+
+        if (balance > 1) {
+            if (rightHeight > leftHeight) {
+                if (parent.left == head) parent.left = rotateLeft(head);
+                else parent.right = rotateLeft(head);
+            }
+            else {
+                if (parent.left == head) parent.left = rotateRight(head);
+                else parent.right = rotateRight(head);
+            }
+        }
+
         return this;
+    }
+
+    private AVLTree removeClosestInorderNodeAndRotate(int value, AVLNode head, AVLNode parent) {
+        assert(head != null);
+        assert(parent != null);
+
+        if (value < head.value) removeClosestInorderNodeAndRotate(value, head.left, head);
+        else if (value > head.value) removeClosestInorderNodeAndRotate(value, head.right, head);
+
+        // we're at the node we want to delete!
+        else {
+            // parent is either original node being overwritten OR in left subtree
+            if (parent.right == head) {
+                // parent is the original node being overwritten
+                if (head.right != null) parent.right = head.right;
+                // parent is in the subtree
+                else parent.right = head.left;
+            }
+            // we are either at original node being overwritten OR in the right subtree
+            else if (parent.left == head) {
+                // parent is the original node being overwritten
+                if (head.left != null) parent.left = head.left;
+                // parent is in the right subtree
+                else parent.left = head.right;
+            }
+            return this;
+        }
+
+        updateHeight(head);
+        int leftHeight = -1, rightHeight = -1;
+        if (head.right != null) rightHeight = head.right.height;
+        if (head.left != null) leftHeight = head.left.height;
+
+        int balance = Math.abs(rightHeight - leftHeight);
+        if (balance > 1) {
+            if (leftHeight > rightHeight) {
+                if (parent.left == head) parent.left = rotateRight(head);
+                else if (parent.right == head) parent.right = rotateRight(head);
+            }
+            else {
+                if (parent.left == head) parent.left = rotateLeft(head);
+                else if (parent.right == head) parent.right = rotateLeft(head);
+            }
+        }
+
+        return this;
+    }
+
+    private AVLNode getClosestInorderNode(AVLNode head) {
+        if (head == null) return null;
+
+        int value = head.value;
+        AVLNode leftClosest = _getClosestInorderNode(value, head.left);
+        AVLNode rightClosest = _getClosestInorderNode(value, head.right);
+
+        if (leftClosest == null && rightClosest == null) return null;
+        if (leftClosest == null) return rightClosest;
+        if (rightClosest == null) return leftClosest;
+
+
+        int rightDifference = Math.abs(rightClosest.value - value);
+        int leftDifference = Math.abs(leftClosest.value - value);
+
+        if (leftDifference <= rightDifference) return leftClosest;
+        return rightClosest;
+    }
+
+    private AVLNode _getClosestInorderNode(int value, AVLNode head) {
+        if (head == null) return null;
+
+        if (head.value < value) {
+            while (head.right != null) head = head.right;
+            return head;
+        }
+        while (head.left != null) head = head.left;
+        return head;
     }
 
     void print() {
@@ -553,6 +731,18 @@ class AVLTree {
         head.print();
         _printVerbose(head.left);
         _printVerbose(head.right);
+    }
+    
+    boolean equals(int[] expected) {
+        Vector<Integer> actual = new Vector<Integer>();
+        _getPreorderTraversal(root, actual);
+
+        if (actual.size() != expected.length) return false;
+
+        for (int i = 0; i < expected.length; i++) {
+            if (actual.get(i) != expected[i]) return false;
+        }
+        return true;
     }
 
 
