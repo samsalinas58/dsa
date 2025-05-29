@@ -1,6 +1,6 @@
-package BinaryTree;
+package main.binarytree;
 
-import BinaryTree.BST;
+import main.binarytree.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -52,6 +52,12 @@ public class Main {
         a3.delete(75);
         a3.print();
         a3.delete(30);
+        a3.print();
+        a3.delete(70);
+        a3.print();
+        a3.delete(80);
+        a3.print();
+        a3.delete(20);
         a3.print();
     }
 
