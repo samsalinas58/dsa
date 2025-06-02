@@ -97,7 +97,7 @@ class LinkedList {
         return this;
     }
 
-    LinkedList prependList(LinkedList l) {
+    public LinkedList prependList(LinkedList l) {
         if (root == null && l.root == null) return null;
         if (l.root == null) return this;
         if (root == null) {
@@ -186,7 +186,7 @@ class LinkedList {
         return this;
     }
 
-    boolean equals(LinkedList l) {
+    public boolean equals(LinkedList l) {
         if (l.size != this.size) return false;
         if (root == null && l.root == null) return true;
         if (root == null || l.root == null) return false;

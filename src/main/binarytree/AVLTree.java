@@ -4,7 +4,7 @@ import java.util.Vector;
 
 public class AVLTree {
 
-    protected static class AVLNode {
+    private static class AVLNode {
         int value;
         int height = 0;
         AVLNode left = null;
@@ -184,7 +184,7 @@ public class AVLTree {
         return pivot;
     }
 
-    AVLTree delete(int value) {
+    public AVLTree delete(int value) {
         if (root == null) return this;
         if (root.value == value && root.left == null && root.right == null) {
             root = null;
@@ -334,7 +334,7 @@ public class AVLTree {
         _getPreorderTraversal(head.right, res);
     }
 
-    void printVerbose() {
+    public void printVerbose() {
         if (root == null) return;
         root.print();
         _printVerbose(root.left);
@@ -350,7 +350,7 @@ public class AVLTree {
 
     // expected should be the preorder traversal in array form of the tree that we expect.
     // actual is going to be the preorder traversal of the current tree that is present.
-    boolean equals(int[] expected) {
+    public boolean equals(int[] expected) {
         Vector<Integer> actual = new Vector<Integer>();
         _getPreorderTraversal(root, actual);
 
