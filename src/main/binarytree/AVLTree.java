@@ -5,7 +5,6 @@ import java.util.Vector;
 public class AVLTree {
 
     protected static class AVLNode {
-        // int value;
         int value;
         int height = 0;
         AVLNode left = null;
@@ -170,7 +169,7 @@ public class AVLTree {
     // if the tree has a balance factor > 1, where balance = abs(leftHeight - rightHeight) and null nodes
     // being treated as -1, then the tree will be rotated. if not, then the pivot is returned
     // as it was given.
-    AVLNode rotateIfNecessary(AVLNode pivot) {
+    private AVLNode rotateIfNecessary(AVLNode pivot) {
         assert(pivot != null);
         int leftHeight = -1, rightHeight = -1;
         if (pivot.left != null) leftHeight = pivot.left.height;
@@ -204,9 +203,9 @@ public class AVLTree {
         return Math.abs(rightHeight - leftHeight);
     }
 
-    boolean isEmpty() { return root == null; }
+    public boolean isEmpty() { return root == null; }
 
-    Integer getRoot() {
+    public Integer getRoot() {
         if (root == null) return null;
         return root.value;
     }
@@ -307,7 +306,7 @@ public class AVLTree {
         return head;
     }
 
-    void print() {
+    public void print() {
         if (root == null) {
             System.out.println("[]");
             return;
@@ -328,7 +327,7 @@ public class AVLTree {
         System.out.println(sb);
     }
 
-    void _getPreorderTraversal(AVLNode head, Vector<Integer> res) {
+    private void _getPreorderTraversal(AVLNode head, Vector<Integer> res) {
         if (head == null) return;
         res.addElement(head.value);
         _getPreorderTraversal(head.left, res);
@@ -342,7 +341,7 @@ public class AVLTree {
         _printVerbose(root.right);
     }
 
-    void _printVerbose(AVLNode head) {
+    private void _printVerbose(AVLNode head) {
         if (head == null) return;
         head.print();
         _printVerbose(head.left);

@@ -1,4 +1,4 @@
-package LinkedList;
+package main.linkedlist;
 
 class LinkedList {
     private static class Node {
