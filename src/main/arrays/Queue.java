@@ -1,4 +1,4 @@
-package Arrays;
+package main.arrays;
 
 class Queue {
     int[] arr = new int[1];

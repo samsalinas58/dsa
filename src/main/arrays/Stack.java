@@ -1,4 +1,4 @@
-package Arrays;
+package main.arrays;
 
 import java.util.EmptyStackException;
 import java.util.Vector;
