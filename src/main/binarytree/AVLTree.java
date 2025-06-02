@@ -41,11 +41,13 @@ public class AVLTree {
 
     AVLNode root = null;
 
-    AVLTree(int value) {
+    public AVLTree() { root = null; }
+
+    public AVLTree(int value) {
         root = new AVLNode(value);
     }
 
-    AVLTree(int[] arr) {
+    public AVLTree(int[] arr) {
         for (int i: arr) this.insert(i);
     }
 
