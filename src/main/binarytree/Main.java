@@ -59,6 +59,12 @@ public class Main {
         a3.print();
         a3.delete(20);
         a3.print();
+
+        BST b = new BST();
+        BST c = new BST();
+        boolean res = b.equals(c);
+
+        System.out.println(res);
     }
 
     static String arrToString(int[] arr) {

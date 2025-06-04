@@ -3,7 +3,7 @@ package binarytree;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-import main.binarytree.*;
+import main.binarytree.AVLTree;
 
 // README: Currently, the testing is done with my own equals() function written inside the AVLTree
 // class. This is not a good practice to follow, but this is how it is for now. Should the equals()

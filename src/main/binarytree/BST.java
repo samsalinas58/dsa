@@ -4,10 +4,10 @@ import java.util.Stack;
 import java.util.Vector;
 
 public class BST {
-    protected static class Node {
-        int value;
-        Node left;
-        Node right;
+    public static class Node {
+        private int value;
+        private Node left;
+        private Node right;
 
         Node() {
            value = -1;
@@ -26,13 +26,14 @@ public class BST {
             this.left = left;
             right = null;
         }
+
         Node(int value, Node left, Node right) {
             this.value = value;
             this.left = left;
             this.right = right;
         }
 
-        void print() {
+        public void print() {
             StringBuilder sb = new StringBuilder("Node(");
             sb.append("value: ").append(value).append(", ").append("left: ");
             if (left != null) sb.append(left.value);
@@ -45,34 +46,34 @@ public class BST {
             System.out.println(sb);
         }
 
-        int getValue() { return this.value; }
+        public int getValue() { return this.value; }
 
-        Node getLeft() {
+        public Node getLeft() {
             if (this.left == null) return null;
             return this.left;
         }
 
-        Node getRight() {
+        public Node getRight() {
             if (this.right == null) return null;
             return this.right;
         }
     }
     Node root;
 
-    BST() {
+    public BST() {
         root = null;
     }
 
-    BST(int value) {
+    public BST(int value) {
         root = new Node(value);
     }
 
-    BST(int[] arr) {
+    public BST(int[] arr) {
         root = null;
         for (int i: arr) this.insert(i);
     }
 
-    Node getNode(int value) {
+    public Node getNode(int value) {
         if (root == null) return null;
         if (root.value == value) return root;
         Node head = root;
@@ -87,11 +88,15 @@ public class BST {
         return _getNode(value, head.right);
     }
 
-    boolean contains(int value) {
+    public Node getRoot() {
+        return root;
+    }
+
+    public boolean find(int value) {
         return this.getNode(value) != null;
     }
 
-    Node getParent(int value) {
+    public Node getParent(int value) {
         if (root == null || root.value == value) return null;
         if (root.left != null && root.left.value == value) return root;
         if (root.right != null && root.right.value == value) return root;
@@ -109,7 +114,7 @@ public class BST {
         return _getParent(value, head.right, parent);
     }
 
-    BST insert(int value) {
+    public BST insert(int value) {
         if (root == null)  {
             root = new Node(value);
             return this;
@@ -129,7 +134,7 @@ public class BST {
         return this;
     }
 
-    BST delete(int value) {
+    public BST delete(int value) {
         if (root == null) return this;
         if (root.value == value && root.left == null && root.right == null) {
             root = null;
@@ -159,17 +164,8 @@ public class BST {
             root.value = closestNode.value;
             // NOTE: The closest successor should have no left children,
             // and the closest predecessor should have no right children.
-            if (closestParent == root) {
-                if (closestNode.right == null) root.left = closestNode.left;
-                else if (closestNode.left == null) root.right = closestNode.right;
-                return this;
-            }
-            else if (closestNode.left != null) closestParent.right = closestNode.left;
-            else if (closestNode.right != null) closestParent.left = closestNode.right;
-            else {
-                if (closestParent.left.value == closestNode.value) closestParent.left = null;
-                else closestParent.right = null;
-            }
+            if (closestParent.right == closestNode) closestParent.right = closestNode.left;
+            else if (closestParent.left == closestNode) closestParent.left = closestNode.right;
         }
         Node head = root;
         Node parent = root;
@@ -227,12 +223,8 @@ public class BST {
                 else if (closestNode.left == null) head.right = closestNode.right;
                 return this;
             }
-            else if (closestNode.left != null) closestParent.right = closestNode.left;
-            else if (closestNode.right != null) closestParent.left = closestNode.right;
-            else {
-                if (closestParent.left.value == closestNode.value) closestParent.left = null;
-                else closestParent.right = null;
-            }
+            else if (closestParent.right == closestNode) closestParent.right = closestNode.left;
+            else if (closestParent.left == closestNode) closestParent.left = closestNode.right;
         }
         return this;
     }
@@ -262,7 +254,7 @@ public class BST {
         Vector<Integer> res = new Vector<Integer>();
         Node head = root;
         res.addElement(head.value);
-        // populate vector with _print()
+        // populate vector with _getPreorderTraversal()
         _getPreorderTraversal(head.left, res);
         _getPreorderTraversal(head.right, res);
 
@@ -276,7 +268,6 @@ public class BST {
         System.out.println(sb);
     }
 
-    // Preorder Traversal!
     void _getPreorderTraversal(Node head, Vector<Integer> res) {
         if (head == null) return;
         res.addElement(head.value);
@@ -318,17 +309,47 @@ public class BST {
         return this;
     }
 
-    Integer max() {
+    public Integer max() {
         if (root == null) return null;
         Node head = root;
         while (head.right != null) head = head.right;
         return head.value;
     }
 
-    Integer min() {
+    public Integer min() {
         if (root == null) return null;
         Node head = root;
         while (head.left != null) head = head.left;
         return head.value;
+    }
+
+    boolean equals(int[] arr) {
+        Vector<Integer> vec = new Vector<Integer>();
+        _getPreorderTraversal(root, vec);
+
+        if (arr.length != vec.size()) return false;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] != vec.get(i)) return false;
+        }
+
+        return true;
+    }
+
+    public boolean equals(BST b) {
+        if (root == null && b.root == null) return true;
+        if (root == null || b.root == null) return false;
+
+        if (root.value != b.root.value) return false;
+
+        return _equals(root.left, b.root.left) && _equals(root.right, b.root.right);
+    }
+
+    private boolean _equals(Node a, Node b) {
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
+
+        if (a.value != b.value) return false;
+
+        return _equals(a.left, b.left) && _equals(a.right, b.right);
     }
 }
