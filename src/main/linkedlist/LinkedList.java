@@ -1,6 +1,6 @@
 package main.linkedlist;
 
-class LinkedList {
+public class LinkedList {
     private static class Node {
         int value;
         Node next;
@@ -29,16 +29,16 @@ class LinkedList {
     Node root;
     int size = 0;
 
-    LinkedList() {
+    public LinkedList() {
         root = null;
     }
 
-    LinkedList(int value) {
+    public LinkedList(int value) {
         root = new Node(value);
         size = 1;
     }
 
-    LinkedList(int[] arr) {
+    public LinkedList(int[] arr) {
         if (arr.length == 0) {
             root = null;
             return;
@@ -46,8 +46,7 @@ class LinkedList {
         root = new Node(arr[0]);
         Node head = root;
         for (int i = 1; i < arr.length; i++) {
-            Node new_node = new Node(arr[i]);
-            head.next = new_node;
+            head.next = new Node(arr[i]);
             head = head.next;
         }
         size = arr.length;
@@ -79,6 +78,7 @@ class LinkedList {
     public LinkedList append(int value) {
         if (root == null)  {
             root = new Node(value);
+            size = 1;
             return this;
         }
         Node head = root;
@@ -89,7 +89,12 @@ class LinkedList {
     }
 
     public LinkedList appendList(LinkedList l) {
-        if (root == null) root = l.root;
+        if (root == null) {
+            root = l.root;
+            size = l.size;
+            return this;
+        }
+        if (l.root == null) return this;
         Node head = root;
         while (head.next != null) head = head.next;
         head.next = l.root;
@@ -98,13 +103,12 @@ class LinkedList {
     }
 
     public LinkedList prependList(LinkedList l) {
-        if (root == null && l.root == null) return null;
-        if (l.root == null) return this;
         if (root == null) {
             size = l.size;
             root = l.root;
             return this;
         }
+        if (l.root == null) return this;
 
         Node head = l.root;
         while (head.next != null) head = head.next;
@@ -117,20 +121,15 @@ class LinkedList {
 
     public LinkedList pop_back() {
         if (root == null) return this;
-        if (root.next == null) {
-            size -= 1;
-            root = null;
-            return this;
-        }
 
         Node head = root;
-        Node prev = root;
+        Node prev = null;
         while (head.next != null) {
             prev = head;
             head = head.next;
         }
-        head = null;
-        prev.next = null;
+        if (prev != null) prev.next = null;
+        else root = null;
         size -= 1;
         return this;
     }
@@ -162,7 +161,6 @@ class LinkedList {
 
         Node head = root;
         Node prev = root;
-        int curr = 0;
         for (int i = 0; i < index; i++) {
             prev = head;
             head = head.next;
@@ -200,6 +198,15 @@ class LinkedList {
 
         return true;
     }
+
+    public Integer get(int idx) {
+        if (idx >= size || root == null) return null;
+        Node head = root;
+        for (int i = 0; i != idx; i++) head = head.next;
+        return head.value;
+    }
+
+    public boolean isEmpty() { return size == 0; }
 
     public void print() {
         StringBuilder sb = new StringBuilder("LinkedList(list: ");

@@ -3,21 +3,21 @@ package main.arrays;
 import java.util.EmptyStackException;
 import java.util.Vector;
 
-class Stack {
+public class Stack {
     private int[] arr;
     private int size = 0;
 
-    Stack() {
+    public Stack() {
         int capacity = 1;
         arr = new int[capacity];
     }
 
-    Stack(int value) {
+    public Stack(int value) {
         size = 1;
         arr = new int[]{value};
     }
 
-    Stack push(int value) {
+    public Stack push(int value) {
         if (size == arr.length) {
             int capacity = size * 2;
             int[] newArr = new int[capacity];
@@ -30,18 +30,22 @@ class Stack {
         return this;
     }
 
-    int size() { return size; }
+    public int size() { return size; }
 
-    int top() throws EmptyStackException {
+    public int top() throws EmptyStackException {
         if (size == 0) throw new EmptyStackException();
         return arr[size - 1];
     }
 
     // lazy deletion!
-    Stack pop() throws EmptyStackException {
+    public Stack pop() throws EmptyStackException {
         if (size == 0) throw new EmptyStackException();
         size -= 1;
         return this;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
     }
 
     void print() {
