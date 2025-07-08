@@ -1,9 +1,6 @@
 package main.graph;
 
 import main.graph.exceptions.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Vector;
 
 abstract class Graph {
@@ -32,7 +29,7 @@ abstract class Graph {
         }
     }
 
-    abstract public void printDFS(int start);
+    abstract public void dfs(int start) throws NodeNotFoundException;
     abstract public void printBFS(int start) throws NodeNotFoundException;
     abstract public Vector<Vector<Edge>> bfs(int start) throws NodeNotFoundException;
     abstract public Graph insert(int x) throws NodeExistsException;

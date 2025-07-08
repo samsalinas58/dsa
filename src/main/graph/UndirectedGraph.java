@@ -4,7 +4,8 @@ import main.graph.exceptions.*;
 import java.util.Vector;
 
 public class UndirectedGraph extends Graph {
-    public void printDFS(int start) {
+
+    public void dfs(int start) throws NodeNotFoundException {
 
     }
 

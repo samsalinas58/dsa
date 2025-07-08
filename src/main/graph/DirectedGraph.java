@@ -6,8 +6,9 @@ import java.util.*;
 
 public class DirectedGraph extends Graph {
 
-    HashMap<Integer, HashSet<Integer>> edges; // <node, set<nodes>>
-    HashMap<Integer, Integer> weights; // <hashCode(edge), weight>
+    private final HashMap<Integer, HashSet<Integer>> edges; // <node, set<nodes>>
+    private final HashMap<Integer, Integer> weights; // <hashCode(edge), weight>
+
     public DirectedGraph() {
         this.edges = new HashMap<>();
         this.weights = new HashMap<>();
@@ -30,10 +31,6 @@ public class DirectedGraph extends Graph {
             for (int y: edges.get(x)) if (!visited.contains(y)) stk.push(y);
             System.out.println(x);
         }
-    }
-
-    public void printDFS(int start) {
-
     }
 
     // Finds the shortest path starting from vertex 'start' to vertex 'end'
